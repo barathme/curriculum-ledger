@@ -370,10 +370,40 @@ function newCourseId(){
 }
 
 function ensureR26(){
-  if (!DB.r26 || !DB.r26.semesters){
+  const isFresh = !DB.r26 || !DB.r26.semesters;
+  if (isFresh){
     const years = ["I","I","II","II","III","III","IV","IV"];
     DB.r26 = { semesters: [1,2,3,4,5,6,7,8].map(n => ({sem:n, year:years[n-1], courses:[]})) };
+    seedR26Defaults();
+    if (mode === "editor") saveDB(); // persist the seed immediately, don't wait for a manual edit
   }
+}
+
+// R26 Regulation, Semester I & II — from the official R26 syllabus document.
+// Only used to seed a brand-new R26 (never overwrites existing data).
+function seedR26Defaults(){
+  const sem1 = DB.r26.semesters.find(s => s.sem === 1);
+  const sem2 = DB.r26.semesters.find(s => s.sem === 2);
+  const S1 = [
+    {name:"Differential Calculus", l:3,t:1,p:0,c:4},
+    {name:"Algebraic Structures", l:3,t:1,p:0,c:4},
+    {name:"Computer Programming", l:3,t:0,p:2,c:4},
+    {name:"English for Technical Communication", l:2,t:0,p:2,c:3},
+    {name:"Physics of Semiconductor Devices + Lab", l:3,t:0,p:2,c:4},
+    {name:"Climate and Sustainability Engineering", l:3,t:0,p:0,c:3},
+    {name:"New Age Life Skills", l:2,t:0,p:2,c:3},
+  ];
+  const S2 = [
+    {name:"Ordinary Differential Equations", l:3,t:1,p:0,c:4},
+    {name:"Discrete Mathematics", l:3,t:1,p:0,c:4},
+    {name:"Data Structures", l:3,t:0,p:2,c:4},
+    {name:"Object Oriented Programming", l:2,t:0,p:2,c:3},
+    {name:"Python Programming", l:2,t:0,p:2,c:3},
+    {name:"Digital Electronics and Logic Design +Lab", l:3,t:0,p:2,c:4},
+    {name:"Innovation and Entrepreneurship", l:3,t:0,p:0,c:3},
+  ];
+  S1.forEach(s => sem1.courses.push({code:newCourseId(), ...s}));
+  S2.forEach(s => sem2.courses.push({code:newCourseId(), ...s}));
 }
 
 let regulation = "R25"; // "R25" | "R26"
