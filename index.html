@@ -196,6 +196,7 @@
     max-height:88vh;overflow-y:auto;padding:26px 28px 24px 28px;position:relative;
   }
   .modal.wide{max-width:820px;}
+  .modal.syllabus-modal{max-width:960px;max-height:92vh;}
   .modal-close{
     position:absolute;top:16px;right:16px;background:none;border:none;font-size:18px;
     cursor:pointer;color:var(--ink-soft);font-family:inherit;
@@ -211,6 +212,7 @@
     white-space:pre-wrap;font-size:13.5px;background:var(--paper-2);border:1px solid var(--rule);
     padding:14px;max-height:280px;overflow-y:auto;border-radius:3px;
   }
+  .syllabus-modal .syllabus-text{max-height:60vh;}
   .syllabus-text.rich table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px;}
   .syllabus-text.rich table td, .syllabus-text.rich table th{border:1px solid var(--rule);padding:6px 8px;}
   .syllabus-text.rich h1, .syllabus-text.rich h2, .syllabus-text.rich h3{font-family:inherit;margin:14px 0 6px 0;}
@@ -524,7 +526,18 @@ async function saveDB(){
 // without the password, even though the Drive permission on it is "anyone with
 // the link can view." "Stop sharing" also removes that permission outright.
 // ---------------------------------------------------------------------------
-function b64encode(buf){ return btoa(String.fromCharCode(...new Uint8Array(buf))); }
+function b64encode(buf){
+  // Chunked on purpose: spreading a large byte array straight into
+  // String.fromCharCode(...) blows past JS's max-arguments limit once the
+  // curriculum data (and its syllabi) gets big enough — this avoids that.
+  const bytes = new Uint8Array(buf);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize){
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
 function b64decode(str){ return Uint8Array.from(atob(str), c => c.charCodeAt(0)); }
 
 async function deriveKey(password, saltBytes){
@@ -1174,15 +1187,19 @@ function buildCourseModal(code){
   const course = courseByCode(code);
   const data = syllabusCache[code];
   const overlay = el(`<div class="overlay"></div>`);
-  const modal = el(`<div class="modal">
+  const modal = el(`<div class="modal syllabus-modal">
     <button class="modal-close">✕</button>
     <h2>${course.name}</h2>
     <div class="code">${code}</div>
     <div class="syllabus-area" id="syl-area"></div>
+    <div class="row-gap" style="margin-top:18px;border-top:1px solid var(--rule);padding-top:14px;">
+      <button class="btn" id="bottom-close-btn">Close</button>
+    </div>
   </div>`);
   overlay.appendChild(modal);
   overlay.onclick = (e) => { if (e.target === overlay){ modalCourse = null; render(); } };
   modal.querySelector(".modal-close").onclick = () => { modalCourse = null; render(); };
+  modal.querySelector("#bottom-close-btn").onclick = () => { modalCourse = null; render(); };
 
   const area = modal.querySelector("#syl-area");
   const isEditor = mode === "editor";
