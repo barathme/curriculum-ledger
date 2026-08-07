@@ -470,12 +470,19 @@ async function writeFileContent(fileId, content){
   );
 }
 
+let shareOutOfSync = false; // true when isPublic but this session hasn't unlocked sync yet
+
 async function saveDB(){
   if (mode !== "editor" || !driveFileId) return;
   await writeFileContent(driveFileId, DB);
   // keep the shared (public) copy in sync automatically, re-encrypted, while sharing is on
-  if (isPublic && sharePassword){
-    try{ await syncSharedCopy(sharePassword); }catch(e){ console.error("Shared copy sync failed:", e); }
+  if (isPublic){
+    if (sharePassword){
+      try{ await syncSharedCopy(sharePassword); shareOutOfSync = false; }
+      catch(e){ console.error("Shared copy sync failed:", e); shareOutOfSync = true; }
+    } else {
+      shareOutOfSync = true; // sharing is on, but we don't have the password this session
+    }
   }
 }
 
@@ -532,6 +539,20 @@ async function checkSharing(){
   const pub = (json.permissions || []).find(p => p.type === "anyone" && p.role === "reader");
   isPublic = !!pub;
   publicPermissionId = pub ? pub.id : null;
+}
+
+// Confirms a password against the CURRENT shared file (so a typo can't silently
+// change what recipients need), then unlocks auto-sync for the rest of this session.
+async function unlockSharingPassword(password){
+  try{
+    const current = await loadFileContent(sharedFileId); // owner reads via their own OAuth token
+    await decryptJSON(current, password); // throws if wrong
+    sharePassword = password;
+    await syncSharedCopy(password); // push anything uploaded earlier this session that didn't sync
+    return true;
+  }catch(e){
+    return false;
+  }
 }
 
 async function makePublic(password){
@@ -640,6 +661,7 @@ function connectDrive(){
         const data = await loadFileContent(driveFileId);
         Object.assign(syllabusCache, data.syllabi || {});
         await checkSharing();
+        shareOutOfSync = isPublic; // fresh sign-in never has the password yet
         mode = "editor";
       }catch(e){
         console.error(e);
@@ -742,6 +764,14 @@ function buildModeBanner(){
       Read-only shared view
     </div>`);
   }
+  if (mode === "editor" && shareOutOfSync){
+    const banner = el(`<div style="background:var(--danger-bg);color:var(--danger);border-bottom:1px solid var(--danger);padding:9px 32px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+      <span>Your shared link is on, but this session hasn't unlocked it — recent uploads haven't reached it yet.</span>
+      <button class="btn danger small" id="unlock-share-banner" style="flex-shrink:0;">Unlock in Share</button>
+    </div>`);
+    banner.querySelector("#unlock-share-banner").onclick = () => { shareOpen = true; render(); };
+    return banner;
+  }
   return el(`<div style="display:none;"></div>`);
 }
 
@@ -768,14 +798,24 @@ function buildHeader(){
 
 function buildShareModal(){
   const overlay = el(`<div class="overlay"></div>`);
+  const needsUnlock = isPublic && !sharePassword;
   const modal = el(`<div class="modal">
     <button class="modal-close">✕</button>
     <h2>Share this curriculum</h2>
     <div class="code">read-only link — viewers can't edit or upload</div>
     <div class="row-gap" style="margin-top:16px;">
       <span class="status-chip ${isPublic?'up':'emp'}"><span class="d"></span>${isPublic ? "Link sharing on" : "Not shared"}</span>
+      ${needsUnlock ? '<span class="status-chip emp" style="color:var(--danger);"><span class="d"></span>Not synced this session</span>' : ''}
     </div>
-    ${isPublic ? `
+    ${needsUnlock ? `
+      <div class="hint" style="margin-top:14px;margin-bottom:4px;">This browser session doesn't have your sharing password yet, so recent uploads haven't reached the shared link. Enter it to catch the link up and keep it syncing for the rest of this session.</div>
+      <input type="password" id="unlock-pw" class="paste-box" style="min-height:auto;padding:10px;" placeholder="Enter your sharing password">
+      <div class="unlock-error" style="color:var(--danger);font-size:12px;margin-top:6px;height:14px;"></div>
+      <div class="row-gap" style="margin-top:8px;">
+        <button class="btn gold small" id="unlock-btn">Unlock and sync now</button>
+        <button class="btn danger small" id="stop-share">Stop sharing instead</button>
+      </div>
+    ` : isPublic ? `
       <button class="btn danger small" id="stop-share" style="margin-top:14px;">Stop sharing</button>
       <textarea class="paste-box" readonly style="min-height:50px;margin-top:14px;" id="share-url">${shareLink()}</textarea>
       <div class="row-gap"><button class="btn small" id="copy-link">Copy link</button></div>
@@ -797,11 +837,20 @@ function buildShareModal(){
     const pw = modal.querySelector("#share-pw").value;
     if (!pw || pw.length < 4){ alert("Choose a password at least 4 characters long."); return; }
     startBtn.disabled = true;
-    try{ await makePublic(pw); }
+    try{ await makePublic(pw); shareOutOfSync = false; }
     catch(e){ alert("Couldn't turn on sharing: " + e.message); startBtn.disabled = false; }
   };
+  const unlockBtn = modal.querySelector("#unlock-btn");
+  if (unlockBtn) unlockBtn.onclick = async () => {
+    const pw = modal.querySelector("#unlock-pw").value;
+    if (!pw) return;
+    unlockBtn.disabled = true;
+    const ok = await unlockSharingPassword(pw);
+    if (ok){ shareOutOfSync = false; render(); }
+    else { modal.querySelector(".unlock-error").textContent = "Incorrect password — try again."; unlockBtn.disabled = false; }
+  };
   const stopBtn = modal.querySelector("#stop-share");
-  if (stopBtn) stopBtn.onclick = stopSharing;
+  if (stopBtn) stopBtn.onclick = async () => { await stopSharing(); shareOutOfSync = false; };
   const copyBtn = modal.querySelector("#copy-link");
   if (copyBtn) copyBtn.onclick = () => {
     navigator.clipboard.writeText(shareLink()).then(() => { copyBtn.textContent = "Copied"; setTimeout(()=>copyBtn.textContent="Copy link",1200); });
