@@ -1056,9 +1056,9 @@ function buildR26Semester(){
   const tbody = document.createElement("tbody");
   sem.courses.forEach((c,i) => {
     const has = !!syllabusCache[c.code];
-    const tr = el(`<tr>
+    const tr = el(`<tr class="course-row">
       <td class="num code-cell mono">${i+1}</td>
-      <td class="course-row" style="cursor:pointer;">${c.name}</td>
+      <td>${c.name}</td>
       <td class="num mono">${c.l}</td>
       <td class="num mono">${c.t}</td>
       <td class="num mono">${c.p}</td>
@@ -1066,7 +1066,7 @@ function buildR26Semester(){
       <td><span class="status-chip ${has?'up':'emp'}"><span class="d"></span>${has?'Uploaded':'Empty'}</span></td>
       ${isEditor ? '<td><button class="btn small danger" style="padding:3px 8px;">Delete</button></td>' : ''}
     </tr>`);
-    tr.querySelector("td.course-row").onclick = async () => { await loadSyllabus(c.code); modalCourse = c.code; render(); };
+    tr.onclick = async () => { await loadSyllabus(c.code); modalCourse = c.code; render(); };
     if (isEditor){
       tr.querySelector("button").onclick = async (e) => {
         e.stopPropagation();
