@@ -375,7 +375,10 @@ function ensureR26(){
     const years = ["I","I","II","II","III","III","IV","IV"];
     DB.r26 = { semesters: [1,2,3,4,5,6,7,8].map(n => ({sem:n, year:years[n-1], courses:[]})) };
     seedR26Defaults();
-    if (mode === "editor") saveDB(); // persist the seed immediately, don't wait for a manual edit
+    // Don't auto-save here — it can race with a save the user triggers right after
+    // (e.g. uploading a syllabus), and whichever write finishes last would silently
+    // overwrite the other. The seed lives in memory and rides along with the next
+    // real save (upload, add/delete subject) automatically.
   }
 }
 
