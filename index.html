@@ -693,6 +693,7 @@ function connectDrive(){
         driveFileId = await findOrCreateFile(CONFIG.dataFileName, {syllabi:{}});
         const data = await loadFileContent(driveFileId);
         Object.assign(syllabusCache, data.syllabi || {});
+        if (data.r26) DB.r26 = data.r26; // restore any subjects added to R26 in a previous session
         await checkSharing();
         shareOutOfSync = isPublic; // fresh sign-in never has the password yet
         mode = "editor";
