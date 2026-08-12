@@ -351,7 +351,8 @@ const CURRICULUM = [
 // Real Elective & Honours lists, track-wise (Software Engineering/CS Core, AIML, Data
 // Science, Cyber Security, Quantum Computing, Technology Management) — shared by both
 // R25 and R26, since electives are the same course pool regardless of regulation.
-const R26_TRACKS = [
+// Default Electives/Honours lists (seed only — becomes editable, saved data after first load).
+const R26_TRACKS_DEFAULT = [
   {track:"Software Engineering / CS Core", elective:["Distributed Systems","Advanced Database Management Systems / Data Warehousing and Data mining","Social Network Analysis","Machine Learning for Quantum Computing","High Performance Computing","Serverless Computing"], honours:["System Design and Scalable Architectures","Digital Twin Systems / Computer Graphics and Visualization","Platform Engineering","Mobile & Ubiquitous Computing","Spatial Computing / Pattern Recognition & Visual Recognition","Industry 5.0 and Smart Manufacturing"]},
   {track:"AIML", elective:["Computational Intelligence","Explainable AI","Social Network Analysis","Machine Learning for Quantum Computing","Gen AI and LLM","Reinforcement Learning","Recommender Systems / Multimodal AI"], honours:["MLOps and Model Deployment","Digital Twin Systems","Industry 5.0 and Smart Manufacturing","Multi-Agent Systems / Speech Signal Processing & Recognition","LLM Engineering and RAG Systems","Agentic AI and Autonomous Systems"]},
   {track:"Data Science", elective:["Data Mining and Predictive Modeling / Data Mining and Data Warehousing","Digital Marketing and Trend Analysis / Statistical Inference","Time Series Analysis / Exploratory Data Analysis","Social Network Analysis","Data Visualization and Dashboards","Satellite Data Analysis","Healthcare Analysis / Information Retrieval","Recommender Systems"], honours:["Digital Twin Systems","Advanced Data mining and Knowledge Discovery","Cloud Computing for Data Science","Federated Learning","Evolutionary Computing and Swarm Intelligence","Industry 5.0 and Smart Manufacturing"]},
@@ -360,19 +361,27 @@ const R26_TRACKS = [
   {track:"Technology Management", elective:["Technology Strategy Competitive Advantage","Technology Product Management","Digital Transformation Innovation Management","Business Analytics Decision Science","Digital Marketing Social Media Analytics","Technology Project Program Management","Technology Entrepreneurship Start-up Management","Technology Leadership Change Management","Intellectual Property, Technology Transfer & Commercialization"], honours:null},
 ];
 
-// Returns every known course (R25 + whatever's been added to R26), for syllabus lookups & bulk-match.
-// Flat list of R26 track elective/honours courses with stable generated codes,
-// for lookups + bulk-upload matching (built once, since this list is static).
-const R26_TRACK_COURSES = [];
-R26_TRACKS.forEach((tr, ti) => {
-  tr.elective.forEach((name, ii) => R26_TRACK_COURSES.push({code:`r26e-${ti}-el-${ii}`, name}));
-  if (tr.honours) tr.honours.forEach((name, ii) => R26_TRACK_COURSES.push({code:`r26e-${ti}-ho-${ii}`, name}));
-});
+function ensureTracks(){
+  if (!DB.tracks){
+    DB.tracks = R26_TRACKS_DEFAULT.map(tr => ({
+      track: tr.track,
+      elective: tr.elective.map(name => ({code:newCourseId(), name})),
+      honours: tr.honours ? tr.honours.map(name => ({code:newCourseId(), name})) : null,
+    }));
+    // Not auto-saved — rides along with the next real save, same reasoning as R26 semesters.
+  }
+}
 
+// Returns every known course (R25 + whatever's been added to R26 + track electives/honours).
 function allCourses(){
   const r26courses = [];
   (DB.r26 && DB.r26.semesters ? DB.r26.semesters : []).forEach(s => s.courses.forEach(c => r26courses.push({code:c.code, name:c.name})));
-  return ALL_COURSES_R25.concat(r26courses, R26_TRACK_COURSES);
+  const trackCourses = [];
+  (DB.tracks || []).forEach(tr => {
+    tr.elective.forEach(c => trackCourses.push({code:c.code, name:c.name}));
+    if (tr.honours) tr.honours.forEach(c => trackCourses.push({code:c.code, name:c.name}));
+  });
+  return ALL_COURSES_R25.concat(r26courses, trackCourses);
 }
 
 function newCourseId(){
@@ -410,8 +419,8 @@ async function resetR26Sem1And2(){
 // R26 Regulation, official course structure table (I & II Semester) — lecture and lab
 // listed as separate rows with their own credits, matching the college's structure.
 const R26_SEM1_OFFICIAL = [
-  {name:"Differential Calculus", l:3,t:1,p:0,c:4},
-  {name:"Algebraic Structures", l:3,t:1,p:0,c:4},
+  {name:"Differential Calculus", l:3,t:0,p:0,c:3},
+  {name:"Algebraic Structures", l:3,t:0,p:0,c:3},
   {name:"Computer Programming", l:3,t:0,p:0,c:3},
   {name:"Python Programming", l:3,t:0,p:0,c:3},
   {name:"English for Technical Communication", l:3,t:0,p:0,c:3},
@@ -423,8 +432,8 @@ const R26_SEM1_OFFICIAL = [
   {name:"English for Technical Communication Lab", l:0,t:0,p:2,c:1},
 ];
 const R26_SEM2_OFFICIAL = [
-  {name:"Ordinary Differential Equations", l:3,t:1,p:0,c:4},
-  {name:"Discrete Mathematics", l:3,t:1,p:0,c:4},
+  {name:"Ordinary Differential Equations", l:3,t:0,p:0,c:3},
+  {name:"Discrete Mathematics", l:3,t:0,p:0,c:3},
   {name:"Data Structures", l:3,t:0,p:0,c:3},
   {name:"Object Oriented Programming", l:3,t:0,p:0,c:3},
   {name:"Digital Electronics and Logic Design", l:3,t:0,p:0,c:3},
@@ -715,6 +724,7 @@ async function tryViewerPassword(password){
     const decrypted = await decryptJSON(viewerEncryptedPayload, password);
     Object.assign(syllabusCache, decrypted.syllabi || {});
     if (decrypted.r26) DB.r26 = decrypted.r26;
+    if (decrypted.tracks) DB.tracks = decrypted.tracks;
     mode = "viewer";
     render();
     return true;
@@ -739,6 +749,7 @@ function connectDrive(){
         const data = await loadFileContent(driveFileId);
         Object.assign(syllabusCache, data.syllabi || {});
         if (data.r26) DB.r26 = data.r26; // restore any subjects added to R26 in a previous session
+        if (data.tracks) DB.tracks = data.tracks; // restore any Electives/Honours edits from a previous session
         await checkSharing();
         shareOutOfSync = isPublic; // fresh sign-in never has the password yet
         mode = "editor";
@@ -1197,30 +1208,90 @@ function buildAddSubjectForm(sem){
 }
 
 function buildR26TrackPool(kind){
+  ensureTracks();
   const wrap = document.createElement("div");
   const label = kind === "honours" ? "Honours" : "Electives";
+  const isEditor = mode === "editor";
   wrap.appendChild(el(`<div class="sem-title">${label} — by Track</div>`));
-  wrap.appendChild(el(`<div class="sem-meta">Click any course to attach its syllabus</div>`));
+  wrap.appendChild(el(`<div class="sem-meta">${isEditor ? "Click a course name to attach its syllabus. Use the controls on the right to rename, delete, or move a course." : "Click any course to attach its syllabus"}</div>`));
 
-  R26_TRACKS.forEach((tr, ti) => {
+  async function persistTracks(){ await saveDB(); render(); }
+
+  DB.tracks.forEach((tr, ti) => {
     const list = kind === "honours" ? tr.honours : tr.elective;
-    if (!list) return; // this track has no honours list
+    if (!list && !isEditor) return; // nothing to show a viewer for an empty honours track
     const block = document.createElement("div");
     block.className = "pool-block";
     block.appendChild(el(`<div class="pool-cat">${tr.track}</div>`));
     const table = document.createElement("table");
     table.className = "ledger";
     const tbody = document.createElement("tbody");
-    list.forEach((name, ii) => {
-      const code = `r26e-${ti}-${kind === "honours" ? "ho" : "el"}-${ii}`;
-      const has = !!syllabusCache[code];
-      const trEl = el(`<tr class="course-row">
-        <td>${name}</td>
-        <td style="text-align:right;"><span class="status-chip ${has?'up':'emp'}"><span class="d"></span>${has?'Uploaded':'Empty'}</span></td>
+
+    (list || []).forEach((course, ii) => {
+      const has = !!syllabusCache[course.code];
+      const trEl = el(`<tr>
+        <td class="course-row" style="cursor:pointer;">${course.name}</td>
+        <td style="text-align:right;width:90px;"><span class="status-chip ${has?'up':'emp'}"><span class="d"></span>${has?'Uploaded':'Empty'}</span></td>
+        ${isEditor ? `<td style="white-space:nowrap;text-align:right;">
+          <button class="btn small" style="padding:3px 8px;" data-act="rename">Rename</button>
+          <button class="btn small danger" style="padding:3px 8px;" data-act="delete">Delete</button>
+          <select class="move-select" style="font-family:inherit;font-size:12px;padding:3px;border:1px solid var(--rule);background:var(--paper);margin-left:4px;">
+            <option value="">Move to…</option>
+          </select>
+        </td>` : ""}
       </tr>`);
-      trEl.onclick = async () => { await loadSyllabus(code); modalCourse = code; render(); };
+      trEl.querySelector("td.course-row").onclick = async () => { await loadSyllabus(course.code); modalCourse = course.code; render(); };
+
+      if (isEditor){
+        trEl.querySelector('[data-act="rename"]').onclick = async () => {
+          const newName = prompt("Rename course:", course.name);
+          if (newName && newName.trim() && newName.trim() !== course.name){
+            course.name = newName.trim();
+            await persistTracks();
+          }
+        };
+        trEl.querySelector('[data-act="delete"]').onclick = async () => {
+          if (!confirm(`Delete "${course.name}"? Any attached syllabus stays saved in Drive but becomes unattached.`)) return;
+          list.splice(ii, 1);
+          await persistTracks();
+        };
+        const moveSel = trEl.querySelector(".move-select");
+        DB.tracks.forEach((destTr, dti) => {
+          ["elective","honours"].forEach(destKind => {
+            if (dti === ti && destKind === kind) return; // skip current location
+            const optLabel = `${destTr.track} — ${destKind === "honours" ? "Honours" : "Electives"}`;
+            moveSel.appendChild(el(`<option value="${dti}:${destKind}">${optLabel}</option>`));
+          });
+        });
+        moveSel.onchange = async () => {
+          const [destTiStr, destKind] = moveSel.value.split(":");
+          if (!destTiStr) return;
+          const destTi = parseInt(destTiStr);
+          const destTr = DB.tracks[destTi];
+          if (destKind === "honours" && !destTr.honours) destTr.honours = [];
+          const destList = destKind === "honours" ? destTr.honours : destTr.elective;
+          list.splice(ii, 1);
+          destList.push(course);
+          await persistTracks();
+        };
+      }
       tbody.appendChild(trEl);
     });
+
+    if (isEditor){
+      const addRow = el(`<tr><td colspan="3" style="padding:8px 10px;">
+        <button class="btn small gold" data-act="add-course">+ Add course to ${tr.track}</button>
+      </td></tr>`);
+      addRow.querySelector('[data-act="add-course"]').onclick = async () => {
+        const name = prompt(`New ${label.toLowerCase()} course name for ${tr.track}:`);
+        if (!name || !name.trim()) return;
+        if (kind === "honours" && !tr.honours) tr.honours = [];
+        (kind === "honours" ? tr.honours : tr.elective).push({code:newCourseId(), name:name.trim()});
+        await persistTracks();
+      };
+      tbody.appendChild(addRow);
+    }
+
     table.appendChild(tbody);
     block.appendChild(table);
     wrap.appendChild(block);
