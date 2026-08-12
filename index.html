@@ -1121,7 +1121,7 @@ function buildR26Semester(){
   const isEditor = mode === "editor";
 
   wrap.appendChild(el(`<div class="sem-title">Semester ${sem.sem} <span style="font-size:12px;color:var(--gold-deep);font-weight:600;">R26</span></div>`));
-  wrap.appendChild(el(`<div class="sem-meta">Year ${sem.year} · Total credits ${total}</div>`));
+  wrap.appendChild(el(`<div class="sem-meta">Year ${sem.year} · Total credits ${total}${isEditor ? ' · Edit, delete, or move any subject using the buttons on the right' : ''}</div>`));
 
   const table = document.createElement("table");
   table.className = "ledger";
@@ -1132,23 +1132,44 @@ function buildR26Semester(){
   const tbody = document.createElement("tbody");
   sem.courses.forEach((c,i) => {
     const has = !!syllabusCache[c.code];
-    const tr = el(`<tr class="course-row">
+    const tr = el(`<tr>
       <td class="num code-cell mono">${i+1}</td>
-      <td>${c.name}</td>
+      <td class="course-row" style="cursor:pointer;">${c.name}</td>
       <td class="num mono">${c.l}</td>
       <td class="num mono">${c.t}</td>
       <td class="num mono">${c.p}</td>
       <td class="num mono">${c.c}</td>
       <td><span class="status-chip ${has?'up':'emp'}"><span class="d"></span>${has?'Uploaded':'Empty'}</span></td>
-      ${isEditor ? '<td><button class="btn small danger" style="padding:3px 8px;">Delete</button></td>' : ''}
+      ${isEditor ? `<td style="white-space:nowrap;text-align:right;">
+        <button class="btn small" style="padding:3px 8px;" data-act="edit">Edit</button>
+        <button class="btn small danger" style="padding:3px 8px;" data-act="delete">Delete</button>
+        <select class="move-select" style="font-family:inherit;font-size:12px;padding:3px;border:1px solid var(--rule);background:var(--paper);margin-left:4px;">
+          <option value="">Move to…</option>
+        </select>
+      </td>` : ""}
     </tr>`);
-    tr.onclick = async () => { await loadSyllabus(c.code); modalCourse = c.code; render(); };
+    tr.querySelector("td.course-row").onclick = async () => { await loadSyllabus(c.code); modalCourse = c.code; render(); };
     if (isEditor){
-      tr.querySelector("button").onclick = async (e) => {
-        e.stopPropagation();
+      tr.querySelector('[data-act="edit"]').onclick = () => { editSubjectOpen = {sem: sem.sem, code: c.code}; addSubjectOpen = null; render(); };
+      tr.querySelector('[data-act="delete"]').onclick = async () => {
         if (!confirm(`Remove "${c.name}" from Semester ${sem.sem}?`)) return;
         sem.courses.splice(i,1);
         await saveDB();
+        render();
+      };
+      const moveSel = tr.querySelector(".move-select");
+      DB.r26.semesters.forEach(destSem => {
+        if (destSem.sem === sem.sem) return;
+        moveSel.appendChild(el(`<option value="${destSem.sem}">Semester ${destSem.sem}</option>`));
+      });
+      moveSel.onchange = async () => {
+        const destSemNum = parseInt(moveSel.value);
+        if (!destSemNum) return;
+        const destSem = DB.r26.semesters.find(s => s.sem === destSemNum);
+        sem.courses.splice(i,1);
+        destSem.courses.push(c);
+        await saveDB();
+        activeTab = "sem-" + destSemNum;
         render();
       };
     }
@@ -1164,34 +1185,42 @@ function buildR26Semester(){
 
   if (isEditor){
     wrap.appendChild(el(`<div class="row-gap" style="margin-top:16px;"><button class="btn gold small" id="add-subject-btn">+ Add subject</button></div>`));
-    wrap.querySelector("#add-subject-btn").onclick = () => { addSubjectOpen = sem.sem; render(); };
+    wrap.querySelector("#add-subject-btn").onclick = () => { addSubjectOpen = sem.sem; editSubjectOpen = null; render(); };
   }
 
   if (addSubjectOpen === sem.sem){
-    wrap.appendChild(buildAddSubjectForm(sem));
+    wrap.appendChild(buildSubjectForm(sem, null));
+  }
+  if (editSubjectOpen && editSubjectOpen.sem === sem.sem){
+    const editing = sem.courses.find(c => c.code === editSubjectOpen.code);
+    if (editing) wrap.appendChild(buildSubjectForm(sem, editing));
   }
 
   return wrap;
 }
 
 let addSubjectOpen = null;
+let editSubjectOpen = null;
 
-function buildAddSubjectForm(sem){
+// One form for both adding a new subject and editing an existing one —
+// pass an existing course object to edit it in place, or null to add a new one.
+function buildSubjectForm(sem, existing){
+  const isEdit = !!existing;
   const box = el(`<div style="border:1px solid var(--ink);padding:16px;margin-top:14px;max-width:460px;">
-    <div class="sem-meta" style="margin-bottom:10px;">Add subject to Semester ${sem.sem}</div>
-    <input type="text" id="new-name" class="paste-box" style="min-height:auto;padding:8px;margin-bottom:8px;" placeholder="Course name">
+    <div class="sem-meta" style="margin-bottom:10px;">${isEdit ? `Edit subject in` : `Add subject to`} Semester ${sem.sem}</div>
+    <input type="text" id="new-name" class="paste-box" style="min-height:auto;padding:8px;margin-bottom:8px;" placeholder="Course name" value="${isEdit ? existing.name.replace(/"/g,'&quot;') : ''}">
     <div class="row-gap" style="margin-bottom:8px;">
-      <input type="number" id="new-l" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="L" min="0" value="3">
-      <input type="number" id="new-t" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="T" min="0" value="0">
-      <input type="number" id="new-p" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="P" min="0" value="0">
-      <input type="number" id="new-c" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="Credits" min="0" value="3">
+      <input type="number" id="new-l" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="L" min="0" value="${isEdit ? existing.l : 3}">
+      <input type="number" id="new-t" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="T" min="0" value="${isEdit ? existing.t : 0}">
+      <input type="number" id="new-p" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="P" min="0" value="${isEdit ? existing.p : 0}">
+      <input type="number" id="new-c" class="paste-box" style="min-height:auto;padding:8px;width:70px;" placeholder="Credits" min="0" value="${isEdit ? existing.c : 3}">
     </div>
     <div class="row-gap">
-      <button class="btn gold small" id="confirm-add">Add</button>
+      <button class="btn gold small" id="confirm-add">${isEdit ? "Save changes" : "Add"}</button>
       <button class="btn small" id="cancel-add">Cancel</button>
     </div>
   </div>`);
-  box.querySelector("#cancel-add").onclick = () => { addSubjectOpen = null; render(); };
+  box.querySelector("#cancel-add").onclick = () => { addSubjectOpen = null; editSubjectOpen = null; render(); };
   box.querySelector("#confirm-add").onclick = async () => {
     const name = box.querySelector("#new-name").value.trim();
     if (!name){ alert("Enter a course name."); return; }
@@ -1199,8 +1228,13 @@ function buildAddSubjectForm(sem){
     const t = Number(box.querySelector("#new-t").value) || 0;
     const p = Number(box.querySelector("#new-p").value) || 0;
     const c = Number(box.querySelector("#new-c").value) || 0;
-    sem.courses.push({code: newCourseId(), name, l, t, p, c});
+    if (isEdit){
+      existing.name = name; existing.l = l; existing.t = t; existing.p = p; existing.c = c;
+    } else {
+      sem.courses.push({code: newCourseId(), name, l, t, p, c});
+    }
     addSubjectOpen = null;
+    editSubjectOpen = null;
     await saveDB();
     render();
   };
