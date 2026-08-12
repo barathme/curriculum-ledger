@@ -262,109 +262,117 @@
 (function(){
 
 const CURRICULUM = [
-  {sem:1, year:"I", total:22, courses:[
+  {sem:1, year:"I", total:20, courses:[
     {code:"s1-1", name:"Engineering Mathematics - I", l:3,t:0,p:0,c:3},
-    {code:"s1-2", name:"English-I + Lab", l:3,t:0,p:2,c:3},
-    {code:"s1-3", name:"Problem-Solving and Programming + Lab", l:3,t:0,p:2,c:4},
-    {code:"s1-4", name:"Digital Electronics & Logic Design + Lab / Physics of Semiconductor Devices + Lab", l:3,t:0,p:2,c:4},
-    {code:"s1-5", name:"Fundamentals of Python Programming + Lab", l:3,t:0,p:2,c:4},
+    {code:"s1-2", name:"English-I", l:2,t:0,p:0,c:2},
+    {code:"s1-3", name:"Problem-Solving and Programming", l:3,t:0,p:0,c:3},
+    {code:"s1-4", name:"Digital Electronics & Logic Design / Physics of Semiconductor Devices", l:3,t:0,p:0,c:3},
+    {code:"s1-5", name:"Fundamentals of Python Programming", l:2,t:0,p:0,c:2},
     {code:"s1-6", name:"UHV / Lean Start-up", l:3,t:0,p:0,c:3},
-    {code:"s1-7", name:"Design Thinking / AutoCAD", l:3,t:0,p:0,c:1},
+    {code:"s1-7", name:"Design Thinking / AutoCAD", l:0,t:0,p:2,c:1},
+    {code:"s1-8", name:"Digital Electronics & Logic Design Lab / Physics of Semiconductor Devices Lab", l:0,t:0,p:2,c:1},
+    {code:"s1-9", name:"Problem-Solving and Programming Lab", l:0,t:0,p:2,c:1},
+    {code:"s1-10", name:"English-I Lab", l:0,t:0,p:2,c:1},
   ]},
-  {sem:2, year:"I", total:22, courses:[
+  {sem:2, year:"I", total:21, courses:[
     {code:"s2-1", name:"Engineering Mathematics - II", l:3,t:0,p:0,c:3},
-    {code:"s2-2", name:"English-II + Lab", l:3,t:0,p:2,c:3},
-    {code:"s2-3", name:"Data Structures + Lab", l:3,t:0,p:2,c:4},
-    {code:"s2-4", name:"Object Oriented Programming + Lab", l:3,t:0,p:0,c:4},
-    {code:"s2-5", name:"Digital Electronics & Logic Design + Lab / Physics of Semiconductor Devices + Lab", l:3,t:0,p:0,c:4},
-    {code:"s2-6", name:"Lean Start-up / UHV", l:3,t:0,p:0,c:3},
-    {code:"s2-7", name:"AutoCAD / Design Thinking", l:3,t:0,p:0,c:1},
+    {code:"s2-2", name:"English-II", l:2,t:0,p:0,c:2},
+    {code:"s2-3", name:"Data Structures", l:3,t:0,p:2,c:3},
+    {code:"s2-4", name:"Object Oriented Programming", l:3,t:0,p:0,c:3},
+    {code:"s2-5", name:"Digital Electronics & Logic Design / Physics of Semiconductor Devices", l:3,t:0,p:0,c:3},
+    {code:"s2-6", name:"Lean Start-up / UHV", l:2,t:0,p:0,c:2},
+    {code:"s2-7", name:"AutoCAD / Design Thinking", l:0,t:0,p:2,c:1},
+    {code:"s2-8", name:"Digital Electronics & Logic Design Lab / Physics of Semiconductor Devices Lab", l:0,t:0,p:2,c:1},
+    {code:"s2-9", name:"Data Structures Lab", l:0,t:0,p:2,c:1},
+    {code:"s2-10", name:"English-II Lab", l:0,t:0,p:2,c:1},
+    {code:"s2-11", name:"Object Oriented Programming Lab", l:0,t:0,p:2,c:1},
   ]},
-  {sem:3, year:"II", total:25, courses:[
+  {sem:3, year:"II", total:23, courses:[
     {code:"s3-1", name:"Discrete Mathematics", l:3,t:0,p:0,c:3},
-    {code:"s3-2", name:"Design & Analysis of Algorithms + Lab", l:3,t:0,p:2,c:4},
-    {code:"s3-3", name:"Database Systems + Lab", l:3,t:0,p:2,c:4},
-    {code:"s3-4", name:"Advanced Java + Lab", l:3,t:0,p:2,c:4},
-    {code:"s3-5", name:"Digital Systems and Computer Organization", l:3,t:0,p:2,c:4},
-    {code:"s3-6", name:"Artificial Intelligence", l:3,t:0,p:0,c:3},
+    {code:"s3-2", name:"Design & Analysis of Algorithms", l:3,t:0,p:2,c:3},
+    {code:"s3-3", name:"Database Systems", l:3,t:0,p:2,c:3},
+    {code:"s3-4", name:"Advanced Java", l:3,t:0,p:2,c:3},
+    {code:"s3-5", name:"Digital Systems and Computer Organization", l:3,t:0,p:2,c:3},
+    {code:"s3-6", name:"Artificial Intelligence", l:2,t:0,p:0,c:2},
     {code:"s3-7", name:"Full Stack Development", l:3,t:0,p:0,c:3},
+    {code:"s3-8", name:"Design & Analysis of Algorithms Lab", l:0,t:0,p:2,c:1},
+    {code:"s3-9", name:"Database Systems Lab", l:0,t:0,p:2,c:1},
+    {code:"s3-10", name:"Advanced Java Lab", l:0,t:0,p:2,c:1},
   ]},
-  {sem:4, year:"II", total:21, courses:[
+  {sem:4, year:"II", total:25, courses:[
     {code:"s4-1", name:"Formal Languages & Automata", l:3,t:0,p:0,c:3},
-    {code:"s4-2", name:"Android Application Development + Lab", l:3,t:0,p:2,c:4},
-    {code:"s4-3", name:"Machine Learning + Lab", l:3,t:0,p:2,c:4},
+    {code:"s4-2", name:"IOT and Industrial IOT", l:3,t:0,p:0,c:3},
+    {code:"s4-3", name:"Machine Learning", l:3,t:0,p:2,c:3},
     {code:"s4-4", name:"Operating Systems and Networks", l:3,t:0,p:0,c:3},
-    {code:"s4-5", name:"Deterministic & Stochastic Statistical Methods", l:3,t:0,p:0,c:3},
+    {code:"s4-5", name:"Big Data Analytics", l:3,t:0,p:0,c:3},
     {code:"s4-6", name:"Advanced Full Stack Development", l:3,t:0,p:0,c:3},
-    {code:"s4-7", name:"Full Stack Mini Project", l:0,t:0,p:2,c:1},
+    {code:"s4-7", name:"Compiler Design", l:2,t:0,p:2,c:3},
+    {code:"s4-8", name:"Introduction to Quantum Computing", l:0,t:0,p:2,c:2},
+    {code:"s4-9", name:"Machine Learning Lab", l:0,t:0,p:2,c:1},
+    {code:"s4-10", name:"Full Stack Mini Project", l:0,t:0,p:2,c:1},
   ]},
-  {sem:5, year:"III", total:"21 / 27*", courses:[
-    {code:"s5-1", name:"Cryptography & Network Security + Lab", l:3,t:0,p:2,c:4},
-    {code:"s5-2", name:"Deep Learning + Lab", l:3,t:0,p:2,c:4},
-    {code:"s5-3", name:"Cloud Computing + Lab", l:3,t:0,p:2,c:4},
-    {code:"s5-4", name:"Specialization 1", l:3,t:0,p:0,c:3},
-    {code:"s5-5", name:"Specialization 2", l:3,t:0,p:0,c:3},
-    {code:"s5-6", name:"Specialization 3", l:3,t:0,p:0,c:3},
-    {code:"s5-7", name:"Honours-1*", l:3,t:0,p:0,c:3},
-    {code:"s5-8", name:"Honours-2*", l:3,t:0,p:0,c:3},
+  {sem:5, year:"III", total:20, courses:[
+    {code:"s5-1", name:"Cryptography & Network Security", l:2,t:0,p:0,c:2},
+    {code:"s5-2", name:"Optimisation Techniques", l:2,t:0,p:0,c:2},
+    {code:"s5-3", name:"Android Application Development", l:3,t:0,p:0,c:3},
+    {code:"s5-4", name:"AR/VR", l:2,t:0,p:0,c:2},
+    {code:"s5-5", name:"Elective 1", l:3,t:0,p:0,c:3},
+    {code:"s5-6", name:"Elective 2", l:3,t:0,p:0,c:3},
+    {code:"s5-7", name:"Elective 3", l:3,t:0,p:0,c:3},
+    {code:"s5-8", name:"Android Application Development Lab", l:0,t:0,p:2,c:1},
+    {code:"s5-9", name:"Cryptography & Network Security Lab", l:0,t:0,p:2,c:1},
   ]},
-  {sem:6, year:"III", total:"21 / 27*", courses:[
-    {code:"s6-1", name:"IOT", l:3,t:0,p:0,c:3},
-    {code:"s6-2", name:"DevOps + Lab", l:3,t:0,p:2,c:4},
-    {code:"s6-3", name:"Specialization 4", l:3,t:0,p:2,c:4},
-    {code:"s6-4", name:"Specialization 5", l:3,t:0,p:2,c:4},
-    {code:"s6-5", name:"Professional Elective-1", l:3,t:0,p:0,c:3},
-    {code:"s6-6", name:"Professional Elective-2", l:3,t:0,p:0,c:3},
-    {code:"s6-7", name:"Honours-3*", l:3,t:0,p:0,c:3},
-    {code:"s6-8", name:"Honours-4*", l:3,t:0,p:0,c:3},
+  {sem:6, year:"III", total:21, courses:[
+    {code:"s6-1", name:"Computer Vision", l:3,t:0,p:0,c:3},
+    {code:"s6-2", name:"Cloud Computing", l:3,t:0,p:0,c:3},
+    {code:"s6-3", name:"Deep Learning", l:3,t:0,p:2,c:3},
+    {code:"s6-4", name:"Elective 5", l:3,t:0,p:2,c:3},
+    {code:"s6-5", name:"Elective 6", l:3,t:0,p:0,c:3},
+    {code:"s6-6", name:"Elective 7", l:3,t:0,p:0,c:3},
+    {code:"s6-7", name:"Computer Vision Lab", l:0,t:0,p:0,c:1},
+    {code:"s6-8", name:"Cloud Computing Lab", l:0,t:0,p:2,c:1},
+    {code:"s6-9", name:"Deep Learning Lab", l:0,t:0,p:2,c:1},
   ]},
-  {sem:7, year:"IV", total:"16 / 23*", courses:[
-    {code:"s7-1", name:"Professional Elective-3", l:3,t:0,p:0,c:3},
-    {code:"s7-2", name:"Professional Elective-4", l:3,t:0,p:0,c:3},
-    {code:"s7-3", name:"Open Elective-1", l:3,t:0,p:0,c:3},
-    {code:"s7-4", name:"Open Elective-2", l:3,t:0,p:0,c:3},
-    {code:"s7-5", name:"Open Elective-3", l:3,t:0,p:0,c:3},
-    {code:"s7-6", name:"Minor Project", l:0,t:0,p:4,c:1},
-    {code:"s7-7", name:"Honours-5*", l:3,t:0,p:0,c:3},
-    {code:"s7-8", name:"Honours-6*", l:3,t:0,p:0,c:3},
+  {sem:7, year:"IV", total:20, courses:[
+    {code:"s7-1", name:"Dev Ops", l:3,t:0,p:0,c:3},
+    {code:"s7-2", name:"Block Chain Technology", l:2,t:0,p:0,c:2},
+    {code:"s7-3", name:"Natural Language Processing", l:3,t:0,p:0,c:3},
+    {code:"s7-4", name:"Elective 7", l:3,t:0,p:0,c:3},
+    {code:"s7-5", name:"Elective 8", l:3,t:0,p:0,c:3},
+    {code:"s7-6", name:"Elective 9", l:3,t:0,p:0,c:3},
+    {code:"s7-7", name:"Dev Ops Lab", l:0,t:0,p:2,c:1},
+    {code:"s7-8", name:"Minor Project", l:0,t:0,p:4,c:2},
   ]},
-  {sem:8, year:"IV", total:"12 / 18*", courses:[
-    {code:"s8-1", name:"Major Project", l:null,t:null,p:null,c:12},
-    {code:"s8-2", name:"Capstone Project (Honours)*", l:null,t:null,p:null,c:18},
-  ]},
-];
-
-const ELECTIVE_POOLS = [
-  {pool:"Specialization Pool (Core Advanced Courses)", cats:[
-    {cat:"Artificial Intelligence & Machine Learning", items:["Reinforcement Learning","Causal Machine Learning","Generative AI & Foundation Models","LLM Engineering & Retrieval-Augmented Generation (RAG)","Agentic AI & Autonomous Systems","Multi-Agent Systems","Multimodal AI","AI Systems Engineering","Distributed AI Systems","MLOps & Model Deployment","Graph Machine Learning","Knowledge Graphs & Semantic AI","Adversarial Machine Learning","Privacy-Preserving Machine Learning","AI Platform Engineering","AI Hardware & Accelerators"]},
-    {cat:"Data Engineering & Intelligent Systems", items:["Data Engineering","Advanced Database Systems","Information Retrieval & Search Systems","Vector Databases","DataOps","Feature Store Engineering","Lakehouse Architecture","Data Governance","Streaming Data Systems (Apache Kafka)"]},
-    {cat:"Cloud, Systems & Software Engineering", items:["Distributed Systems","System Design & Scalable Architectures","Platform Engineering","Site Reliability Engineering (SRE)","Cloud Native Engineering","FinOps for Cloud Computing","DevSecOps","GitOps","Infrastructure as Code (IaC)","Kubernetes Administration","Service Mesh Technologies"]},
-    {cat:"Cyber Security", items:["AI in Cyber Security","Cloud Security","Malware Analysis & Threat Intelligence","Threat Hunting","Zero Trust Architecture","Offensive Security","Secure AI Systems"]},
-    {cat:"Emerging Technologies", items:["Edge AI & TinyML","Digital Twin Systems","Quantum Computing","Quantum Machine Learning","Neuromorphic Computing","Advanced Robotics & Intelligent Systems","Autonomous Robotics","Spatial Computing","Industry 5.0 & Smart Manufacturing"]},
-  ]},
-  {pool:"Professional Elective Pool", cats:[
-    {cat:"Artificial Intelligence Applications", items:["Explainable AI (XAI)","Federated Learning","Human-Centered AI","AI Safety & Alignment","AI Agent Orchestration","Prompt Engineering","AI Evaluation & Benchmarking","Small Language Models (SLMs)","AI Governance & Responsible AI","Cognitive Computing","Predictive Analytics","Data Visualization & Storytelling"]},
-    {cat:"Software Engineering & Systems", items:["Graph Analytics & Social Network Analysis","High Performance Computing","GPU Programming with CUDA","Parallel Computing","Serverless Computing","Event-Driven Architecture","API Management","Microservices Architecture","Software Architecture Patterns","Observability & Cloud Monitoring","Software Engineering Practice","Open Source Software Engineering","Secure Software Development","Human-Computer Interaction","UX Engineering"]},
-    {cat:"Application Development", items:["Mobile Computing","Android Application Development","Django Web Development",".NET Application Development"]},
-    {cat:"Cyber Security", items:["Blockchain Technology","Cyber Law & Digital Ethics","Digital Forensics","Ethical Hacking & Penetration Testing","Reverse Engineering"]},
-    {cat:"Emerging Technologies", items:["Extended Reality (XR) Systems","Metaverse Technologies","Embedded AI Systems","Autonomous Vehicles","AI for Healthcare","AI for Finance","AI for Smart Cities","AI for Education","AI for Climate Change","Sustainable AI & Green Computing"]},
-    {cat:"Innovation & Computing Applications", items:["Business Analytics","FinTech","Digital Commerce Technologies","Technology Product Management","Entrepreneurship & Technology Innovation","Digital Public Infrastructure & Digital Identity Systems"]},
+  {sem:8, year:"IV", total:10, courses:[
+    {code:"s8-1", name:"Major Project", l:null,t:null,p:null,c:10},
   ]},
 ];
 
-// build flat course list (main curriculum + elective pool items get generated codes)
-const ALL_COURSES_R25 = [];
-CURRICULUM.forEach(sem => sem.courses.forEach(c => ALL_COURSES_R25.push({code:c.code, name:c.name})));
-ELECTIVE_POOLS.forEach((pool, pi) => pool.cats.forEach((cat, ci) => cat.items.forEach((name, ii) => {
-  const code = "ep-"+pi+"-"+ci+"-"+ii;
-  ALL_COURSES_R25.push({code, name});
-})));
+// Real Elective & Honours lists, track-wise (Software Engineering/CS Core, AIML, Data
+// Science, Cyber Security, Quantum Computing, Technology Management) — shared by both
+// R25 and R26, since electives are the same course pool regardless of regulation.
+const R26_TRACKS = [
+  {track:"Software Engineering / CS Core", elective:["Distributed Systems","Advanced Database Management Systems / Data Warehousing and Data mining","Social Network Analysis","Machine Learning for Quantum Computing","High Performance Computing","Serverless Computing"], honours:["System Design and Scalable Architectures","Digital Twin Systems / Computer Graphics and Visualization","Platform Engineering","Mobile & Ubiquitous Computing","Spatial Computing / Pattern Recognition & Visual Recognition","Industry 5.0 and Smart Manufacturing"]},
+  {track:"AIML", elective:["Computational Intelligence","Explainable AI","Social Network Analysis","Machine Learning for Quantum Computing","Gen AI and LLM","Reinforcement Learning","Recommender Systems / Multimodal AI"], honours:["MLOps and Model Deployment","Digital Twin Systems","Industry 5.0 and Smart Manufacturing","Multi-Agent Systems / Speech Signal Processing & Recognition","LLM Engineering and RAG Systems","Agentic AI and Autonomous Systems"]},
+  {track:"Data Science", elective:["Data Mining and Predictive Modeling / Data Mining and Data Warehousing","Digital Marketing and Trend Analysis / Statistical Inference","Time Series Analysis / Exploratory Data Analysis","Social Network Analysis","Data Visualization and Dashboards","Satellite Data Analysis","Healthcare Analysis / Information Retrieval","Recommender Systems"], honours:["Digital Twin Systems","Advanced Data mining and Knowledge Discovery","Cloud Computing for Data Science","Federated Learning","Evolutionary Computing and Swarm Intelligence","Industry 5.0 and Smart Manufacturing"]},
+  {track:"Cyber Security", elective:["Linux and Shell programming","Malware Analysis for Mobile Devices","Vulnerability Analysis in Network Protocols","Ethical Hacking and penetration Testing","Web Security / Intrusion Detection System","Device Level IoT security","Cloud Security and Compliances","Forensics and Cyber Law"], honours:["Mobile Computing","Digital Twin Systems","Evolutionary Computing and Swarm Intelligence","Explainable AI (XAI)","Federated Learning","Agentic AI and Autonomous Systems"]},
+  {track:"Quantum Computing", elective:["Quantum Mechanics for Computing","Quantum Information Theory","Quantum Algorithms Complexity","Advanced Quantum Algorithms","Quantum Cryptography Communication","Quantum Machine Learning","Quantum Hardware Architectures","Quantum Software Engineering Programming","Quantum Networking Communication"], honours:null},
+  {track:"Technology Management", elective:["Technology Strategy Competitive Advantage","Technology Product Management","Digital Transformation Innovation Management","Business Analytics Decision Science","Digital Marketing Social Media Analytics","Technology Project Program Management","Technology Entrepreneurship Start-up Management","Technology Leadership Change Management","Intellectual Property, Technology Transfer & Commercialization"], honours:null},
+];
 
 // Returns every known course (R25 + whatever's been added to R26), for syllabus lookups & bulk-match.
+// Flat list of R26 track elective/honours courses with stable generated codes,
+// for lookups + bulk-upload matching (built once, since this list is static).
+const R26_TRACK_COURSES = [];
+R26_TRACKS.forEach((tr, ti) => {
+  tr.elective.forEach((name, ii) => R26_TRACK_COURSES.push({code:`r26e-${ti}-el-${ii}`, name}));
+  if (tr.honours) tr.honours.forEach((name, ii) => R26_TRACK_COURSES.push({code:`r26e-${ti}-ho-${ii}`, name}));
+});
+
 function allCourses(){
   const r26courses = [];
   (DB.r26 && DB.r26.semesters ? DB.r26.semesters : []).forEach(s => s.courses.forEach(c => r26courses.push({code:c.code, name:c.name})));
-  return ALL_COURSES_R25.concat(r26courses);
+  return ALL_COURSES_R25.concat(r26courses, R26_TRACK_COURSES);
 }
 
 function newCourseId(){
@@ -384,31 +392,55 @@ function ensureR26(){
   }
 }
 
+// Replaces whatever is currently in R26 Sem 1 & 2 with the official course structure —
+// used when the official list changes after R26 was already seeded/edited.
+// Any syllabus files attached to the old subjects stay safely in storage, just
+// unattached to anything visible (harmless, but not automatically carried over).
+async function resetR26Sem1And2(){
+  ensureR26();
+  const sem1 = DB.r26.semesters.find(s => s.sem === 1);
+  const sem2 = DB.r26.semesters.find(s => s.sem === 2);
+  sem1.courses = R26_SEM1_OFFICIAL.map(s => ({code:newCourseId(), ...s}));
+  sem2.courses = R26_SEM2_OFFICIAL.map(s => ({code:newCourseId(), ...s}));
+  await saveDB();
+}
+
 // R26 Regulation, Semester I & II — from the official R26 syllabus document.
 // Only used to seed a brand-new R26 (never overwrites existing data).
+// R26 Regulation, official course structure table (I & II Semester) — lecture and lab
+// listed as separate rows with their own credits, matching the college's structure.
+const R26_SEM1_OFFICIAL = [
+  {name:"Differential Calculus", l:3,t:1,p:0,c:4},
+  {name:"Algebraic Structures", l:3,t:1,p:0,c:4},
+  {name:"Computer Programming", l:3,t:0,p:0,c:3},
+  {name:"Python Programming", l:3,t:0,p:0,c:3},
+  {name:"English for Technical Communication", l:3,t:0,p:0,c:3},
+  {name:"Physics of Semiconductor Devices", l:3,t:0,p:0,c:3},
+  {name:"New Age Life Skills", l:3,t:0,p:0,c:3},
+  {name:"Computer Programming Lab", l:0,t:0,p:2,c:1},
+  {name:"Python Programming Lab", l:0,t:0,p:2,c:1},
+  {name:"Physics of Semiconductor Devices Lab", l:0,t:0,p:2,c:1},
+  {name:"English for Technical Communication Lab", l:0,t:0,p:2,c:1},
+];
+const R26_SEM2_OFFICIAL = [
+  {name:"Ordinary Differential Equations", l:3,t:1,p:0,c:4},
+  {name:"Discrete Mathematics", l:3,t:1,p:0,c:4},
+  {name:"Data Structures", l:3,t:0,p:0,c:3},
+  {name:"Object Oriented Programming", l:3,t:0,p:0,c:3},
+  {name:"Digital Electronics and Logic Design", l:3,t:0,p:0,c:3},
+  {name:"Climate and Sustainability Engineering", l:3,t:0,p:0,c:3},
+  {name:"Innovation and Entrepreneurship", l:3,t:0,p:0,c:3},
+  {name:"Data Structures Lab", l:0,t:0,p:2,c:1},
+  {name:"Object Oriented Programming Lab", l:0,t:0,p:2,c:1},
+  {name:"Digital Electronics and Logic Design Lab", l:0,t:0,p:2,c:1},
+  {name:"Human Values", l:0,t:0,p:2,c:1},
+];
+
 function seedR26Defaults(){
   const sem1 = DB.r26.semesters.find(s => s.sem === 1);
   const sem2 = DB.r26.semesters.find(s => s.sem === 2);
-  const S1 = [
-    {name:"Differential Calculus", l:3,t:1,p:0,c:4},
-    {name:"Algebraic Structures", l:3,t:1,p:0,c:4},
-    {name:"Computer Programming", l:3,t:0,p:2,c:4},
-    {name:"English for Technical Communication", l:2,t:0,p:2,c:3},
-    {name:"Physics of Semiconductor Devices + Lab", l:3,t:0,p:2,c:4},
-    {name:"Climate and Sustainability Engineering", l:3,t:0,p:0,c:3},
-    {name:"New Age Life Skills", l:2,t:0,p:2,c:3},
-  ];
-  const S2 = [
-    {name:"Ordinary Differential Equations", l:3,t:1,p:0,c:4},
-    {name:"Discrete Mathematics", l:3,t:1,p:0,c:4},
-    {name:"Data Structures", l:3,t:0,p:2,c:4},
-    {name:"Object Oriented Programming", l:2,t:0,p:2,c:3},
-    {name:"Python Programming", l:2,t:0,p:2,c:3},
-    {name:"Digital Electronics and Logic Design +Lab", l:3,t:0,p:2,c:4},
-    {name:"Innovation and Entrepreneurship", l:3,t:0,p:0,c:3},
-  ];
-  S1.forEach(s => sem1.courses.push({code:newCourseId(), ...s}));
-  S2.forEach(s => sem2.courses.push({code:newCourseId(), ...s}));
+  R26_SEM1_OFFICIAL.forEach(s => sem1.courses.push({code:newCourseId(), ...s}));
+  R26_SEM2_OFFICIAL.forEach(s => sem2.courses.push({code:newCourseId(), ...s}));
 }
 
 let regulation = "R25"; // "R25" | "R26"
@@ -823,8 +855,12 @@ function buildModeBanner(){
 }
 
 function buildHeader(){
+  const resetBtn = (mode === "editor" && regulation === "R26")
+    ? `<button class="btn danger" id="reset-r26-btn" style="border-color:var(--danger);">Reset Sem 1 &amp; 2 to official R26</button>`
+    : "";
   const actions = mode === "editor"
-    ? `<button class="btn" id="share-btn">Share</button>
+    ? `${resetBtn}
+       <button class="btn" id="share-btn">Share</button>
        <button class="btn" id="export-btn">Export all</button>
        <button class="btn gold" id="bulk-btn">Bulk upload syllabi</button>`
     : "";
@@ -839,6 +875,13 @@ function buildHeader(){
     h.querySelector("#bulk-btn").onclick = () => { bulkOpen = true; bulkMatches = []; render(); };
     h.querySelector("#export-btn").onclick = exportAll;
     h.querySelector("#share-btn").onclick = () => { shareOpen = true; render(); };
+    const resetEl = h.querySelector("#reset-r26-btn");
+    if (resetEl) resetEl.onclick = async () => {
+      if (!confirm("Replace the current Sem 1 & 2 subject list with the official R26 structure (22 subjects, lecture and lab as separate rows)?\n\nAny syllabus files already attached to the current Sem 1/2 subjects will stay saved in your Drive, but won't be attached to anything after this — you'd need to re-upload them to the new rows.")) return;
+      resetEl.disabled = true;
+      await resetR26Sem1And2();
+      render();
+    };
   }
   return h;
 }
@@ -967,9 +1010,8 @@ function buildTabStrip(){
       wrap.appendChild(group);
     });
     const electiveBtn = el(`<div class="year-group"><div class="year-label">Reference</div><div class="tab-strip">
-      <button class="tab ${activeTab==='elective-0'?'active':''}" data-etab="elective-0">Specialization Pool</button>
-      <button class="tab ${activeTab==='elective-1'?'active':''}" data-etab="elective-1">Professional Elective</button>
-      <button class="tab ${activeTab==='elective-2'?'active':''}" data-etab="elective-2">Open Elective</button>
+      <button class="tab ${activeTab==='track-electives'?'active':''}" data-etab="track-electives">Electives</button>
+      <button class="tab ${activeTab==='track-honours'?'active':''}" data-etab="track-honours">Honours</button>
     </div></div>`);
     electiveBtn.querySelectorAll("button").forEach(btn => {
       btn.onclick = () => { activeTab = btn.dataset.etab; render(); };
@@ -999,6 +1041,14 @@ function buildTabStrip(){
     group.appendChild(strip);
     wrap.appendChild(group);
   });
+  const r26RefBtn = el(`<div class="year-group"><div class="year-label">Reference</div><div class="tab-strip">
+    <button class="tab ${activeTab==='track-electives'?'active':''}" data-etab="track-electives">Electives</button>
+    <button class="tab ${activeTab==='track-honours'?'active':''}" data-etab="track-honours">Honours</button>
+  </div></div>`);
+  r26RefBtn.querySelectorAll("button").forEach(btn => {
+    btn.onclick = () => { activeTab = btn.dataset.etab; render(); };
+  });
+  wrap.appendChild(r26RefBtn);
   return wrap;
 }
 
@@ -1006,16 +1056,17 @@ function buildContent(){
   const wrap = document.createElement("div");
   wrap.className = "content";
 
+  // Electives/Honours tracks — same real course lists for both R25 and R26.
+  if (activeTab === "track-electives" || activeTab === "track-honours"){
+    wrap.appendChild(buildR26TrackPool(activeTab === "track-honours" ? "honours" : "elective"));
+    return wrap;
+  }
+
   if (regulation === "R26"){
     wrap.appendChild(buildR26Semester());
     return wrap;
   }
 
-  if (activeTab.startsWith("elective-")){
-    const idx = parseInt(activeTab.split("-")[1]);
-    wrap.appendChild(buildElectivePool(idx));
-    return wrap;
-  }
   const semNum = parseInt(activeTab.split("-")[1]);
   const sem = CURRICULUM.find(s => s.sem === semNum);
   wrap.appendChild(el(`<div class="sem-title">Semester ${sem.sem}</div>`));
@@ -1145,36 +1196,30 @@ function buildAddSubjectForm(sem){
   return box;
 }
 
-function buildElectivePool(pi){
-  const pool = ELECTIVE_POOLS[pi];
+function buildR26TrackPool(kind){
   const wrap = document.createElement("div");
-
-  if (!pool){
-    // Open Elective — no fixed list; chosen from other departments' offerings each year.
-    wrap.appendChild(el(`<div class="sem-title">Open Elective</div>`));
-    wrap.appendChild(el(`<div class="sem-meta">Chosen from other departments' offerings — no fixed list</div>`));
-    wrap.appendChild(el(`<div class="empty-state" style="margin-top:8px;">No courses added yet. Tell Claude which Open Elective courses to list here and they'll be added.</div>`));
-    return wrap;
-  }
-
-  wrap.appendChild(el(`<div class="sem-title">${pool.pool}</div>`));
+  const label = kind === "honours" ? "Honours" : "Electives";
+  wrap.appendChild(el(`<div class="sem-title">${label} — by Track</div>`));
   wrap.appendChild(el(`<div class="sem-meta">Click any course to attach its syllabus</div>`));
-  pool.cats.forEach((cat, ci) => {
+
+  R26_TRACKS.forEach((tr, ti) => {
+    const list = kind === "honours" ? tr.honours : tr.elective;
+    if (!list) return; // this track has no honours list
     const block = document.createElement("div");
     block.className = "pool-block";
-    block.appendChild(el(`<div class="pool-cat">${cat.cat}</div>`));
+    block.appendChild(el(`<div class="pool-cat">${tr.track}</div>`));
     const table = document.createElement("table");
     table.className = "ledger";
     const tbody = document.createElement("tbody");
-    cat.items.forEach((name, ii) => {
-      const code = "ep-"+pi+"-"+ci+"-"+ii;
+    list.forEach((name, ii) => {
+      const code = `r26e-${ti}-${kind === "honours" ? "ho" : "el"}-${ii}`;
       const has = !!syllabusCache[code];
-      const tr = el(`<tr class="course-row">
+      const trEl = el(`<tr class="course-row">
         <td>${name}</td>
         <td style="text-align:right;"><span class="status-chip ${has?'up':'emp'}"><span class="d"></span>${has?'Uploaded':'Empty'}</span></td>
       </tr>`);
-      tr.onclick = async () => { await loadSyllabus(code); modalCourse = code; render(); };
-      tbody.appendChild(tr);
+      trEl.onclick = async () => { await loadSyllabus(code); modalCourse = code; render(); };
+      tbody.appendChild(trEl);
     });
     table.appendChild(tbody);
     block.appendChild(table);
