@@ -848,6 +848,19 @@ function buildViewerLockScreen(){
   return wrap;
 }
 
+// True if R26 Sem 1 or Sem 2 doesn't match the current official structure —
+// catches the "I deployed a fix but forgot to click Reset" situation automatically.
+function r26Sem1And2OutOfDate(){
+  if (!DB.r26 || !DB.r26.semesters) return false;
+  const sem1 = DB.r26.semesters.find(s => s.sem === 1);
+  const sem2 = DB.r26.semesters.find(s => s.sem === 2);
+  if (!sem1 || !sem2) return false;
+  const namesMatch = (courses, official) =>
+    courses.length === official.length &&
+    official.every(o => courses.some(c => c.name === o.name && c.c === o.c));
+  return !(namesMatch(sem1.courses, R26_SEM1_OFFICIAL) && namesMatch(sem2.courses, R26_SEM2_OFFICIAL));
+}
+
 function buildModeBanner(){
   if (mode === "viewer"){
     return el(`<div style="background:var(--paper-2);color:var(--ink-soft);border-bottom:1px solid var(--rule);padding:8px 32px;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;">
@@ -860,6 +873,18 @@ function buildModeBanner(){
       <button class="btn danger small" id="unlock-share-banner" style="flex-shrink:0;">Unlock in Share</button>
     </div>`);
     banner.querySelector("#unlock-share-banner").onclick = () => { shareOpen = true; render(); };
+    return banner;
+  }
+  if (mode === "editor" && regulation === "R26" && r26Sem1And2OutOfDate()){
+    const banner = el(`<div style="background:var(--danger-bg);color:var(--danger);border-bottom:1px solid var(--danger);padding:9px 32px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+      <span>R26 Sem 1 & 2 doesn't match the official structure saved in your Drive from an older version.</span>
+      <button class="btn danger small" id="fix-r26-banner" style="flex-shrink:0;">Reset Sem 1 & 2 now</button>
+    </div>`);
+    banner.querySelector("#fix-r26-banner").onclick = async () => {
+      if (!confirm("Replace the current Sem 1 & 2 subject list with the official R26 structure? Syllabus files already attached to the current subjects stay saved in your Drive, but won't be attached to anything after this.")) return;
+      await resetR26Sem1And2();
+      render();
+    };
     return banner;
   }
   return el(`<div style="display:none;"></div>`);
